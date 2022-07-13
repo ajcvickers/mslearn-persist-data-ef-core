@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ContosoPizza.Models;
 
-public class Topping
+public class Topping : IHazLogger, IHazKey
 {
     public Topping(string name, decimal calories)
     {
@@ -15,5 +16,6 @@ public class Topping
     public string Name { get; }
     public decimal Calories { get; }
 
-    [JsonIgnore] public ICollection<Pizza> Pizzas { get; } = new List<Pizza>();
+    [NotMapped]
+    public ILogger? Logger { get; set; }
 }

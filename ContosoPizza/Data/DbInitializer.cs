@@ -15,7 +15,7 @@ public static class DbInitializer
         var tomatoSauce = new Sauce("Tomato", isVegan: true);
         var alfredoSauce = new Sauce("Alfredo", isVegan: false);
 
-        var pizzas = new Pizza[]
+        var pizzas = new List<Pizza>
         {
             new("Meat Lovers", tomatoSauce)
             {
@@ -43,6 +43,17 @@ public static class DbInitializer
                 }
             }
         };
+
+        for (int i = 0; i < 3; i++)
+        {
+            pizzas.Add(new("Confused Pineapple", alfredoSauce)
+            {
+                Toppings =
+                {
+                    pineappleTopping
+                }
+            });
+        }
 
         context.Pizzas.AddRange(pizzas);
         await context.SaveChangesAsync();

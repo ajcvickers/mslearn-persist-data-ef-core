@@ -34,4 +34,11 @@ public class PizzaContext : DbContext
             b.Property(e => e.IsVegan);
         });
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+        => optionsBuilder.AddInterceptors(
+            new LoggerInjectionInterceptor(),
+            new SuppressDeleteConcurrencyInterceptor(),
+            new KeyOrderingExpressionInterceptor(),
+            new ToppingsCachingInterceptor());
 }

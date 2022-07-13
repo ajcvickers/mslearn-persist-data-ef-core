@@ -15,6 +15,13 @@ public class PizzaService
 
     public async Task<IEnumerable<Pizza>> GetAll() 
         => await _context.Pizzas
+            .OrderBy(e => e.Name)
+            .AsNoTracking()
+            .ToListAsync();
+
+    public async Task<IEnumerable<Topping>> GetAllToppings() 
+        => await _context.Toppings
+            .OrderBy(e => e.Name)
             .AsNoTracking()
             .ToListAsync();
 
@@ -50,7 +57,7 @@ public class PizzaService
 
     public async Task UpdateSauce(int pizzaId, int sauceId)
     {
-        var pizzaToUpdate = await _context.Pizzas.FindAsync(pizzaId);
+        var pizzaToUpdate = await GetById(pizzaId);
         var sauceToUpdate = await _context.Sauces.FindAsync(sauceId);
 
         if (pizzaToUpdate is null || sauceToUpdate is null)
@@ -58,7 +65,7 @@ public class PizzaService
             throw new InvalidOperationException("Pizza or sauce does not exist");
         }
 
-        pizzaToUpdate.Sauce = sauceToUpdate;
+        pizzaToUpdate.UpdateSauce(sauceToUpdate);
 
         await _context.SaveChangesAsync();
     }
@@ -70,6 +77,10 @@ public class PizzaService
         {
             _context.Pizzas.Remove(pizzaToDelete);
             await _context.SaveChangesAsync();
+            
+            _context.Pizzas.Remove(pizzaToDelete);
+            await _context.SaveChangesAsync();
+
         }        
     }
 }
