@@ -1,12 +1,24 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ContosoPizza.Models;
 
 public class Pizza
 {
-    public int Id { get; set; }
+    public Pizza(string name)
+    {
+        Name = name;
+    }
 
-    public string? Name { get; set; }
+    public Pizza(string name, Sauce? sauce)
+    {
+        Name = name;
+        Sauce = sauce;
+    }
 
-    public Sauce? Sauce { get; set; }
+    public int Id { get; }
+    public string Name { get; }
     
-    public ICollection<Topping>? Toppings { get; set; }
+    public Sauce? Sauce { get; set; }
+
+    public ICollection<Topping> Toppings { get; } = new List<Topping>();
 }

@@ -1,17 +1,15 @@
+using ContosoPizza.Data;
 using ContosoPizza.Services;
-// Additional using declarations
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Add the PizzaContext
-
-// Add the PromotionsContext
-
-builder.Services.AddScoped<PizzaService>();
+builder.Services
+    .AddControllers();
+builder.Services
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
+    .AddScoped<PizzaService>()
+    .AddSqlite<PizzaContext>("Data Source=ContosoPizza.db");
 
 var app = builder.Build();
 
@@ -23,11 +21,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
-// Add the CreateDbIfNotExists method call
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<PizzaContext>();
+    await context.Database.EnsureDeletedAsync();
+    await context.Database.EnsureCreatedAsync();
+    await DbInitializer.InitializeAsync(context);
+}
 
 app.Run();

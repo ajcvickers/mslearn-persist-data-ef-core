@@ -8,7 +8,7 @@ namespace ContosoPizza.Controllers;
 [Route("[controller]")]
 public class PizzaController : ControllerBase
 {
-    PizzaService _service;
+    private readonly PizzaService _service;
     
     public PizzaController(PizzaService service)
     {
@@ -16,79 +16,66 @@ public class PizzaController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<Pizza> GetAll()
-    {
-        return _service.GetAll();
-    }
+    public async Task<IEnumerable<Pizza>> GetAll() 
+        => await _service.GetAll();
 
     [HttpGet("{id}")]
-    public ActionResult<Pizza> GetById(int id)
+    public async Task<ActionResult<Pizza>> GetById(int id)
     {
-        var pizza = _service.GetById(id);
+        var pizza = await _service.GetById(id);
 
-        if(pizza is not null)
-        {
-            return pizza;
-        }
-        else
-        {
-            return NotFound();
-        }
+        return pizza is not null 
+            ? pizza 
+            : NotFound();
     }
 
 
     [HttpPost]
-    public IActionResult Create(Pizza newPizza)
+    public async Task<IActionResult> Create(Pizza newPizza)
     {
-        var pizza = _service.Create(newPizza);
-        return CreatedAtAction(nameof(GetById), new { id = pizza!.Id }, pizza);
+        var pizza = await _service.Create(newPizza);
+        return CreatedAtAction(nameof(GetById), new { id = pizza.Id }, pizza);
     }
 
     [HttpPut("{id}/addtopping")]
-    public IActionResult AddTopping(int id, int toppingId)
+    public async Task<IActionResult> AddTopping(int id, int toppingId)
     {
-        var pizzaToUpdate = _service.GetById(id);
+        var pizzaToUpdate = await _service.GetById(id);
 
         if(pizzaToUpdate is not null)
         {
-            _service.AddTopping(id, toppingId);
+            await _service.AddTopping(id, toppingId);
             return NoContent();    
         }
-        else
-        {
-            return NotFound();
-        }
+
+        return NotFound();
     }
 
     [HttpPut("{id}/updatesauce")]
-    public IActionResult UpdateSauce(int id, int sauceId)
+    public async Task<IActionResult> UpdateSauce(int id, int sauceId)
     {
-        var pizzaToUpdate = _service.GetById(id);
+        var pizzaToUpdate = await _service.GetById(id);
 
         if(pizzaToUpdate is not null)
         {
-            _service.UpdateSauce(id, sauceId);
+            await _service.UpdateSauce(id, sauceId);
             return NoContent();    
         }
-        else
-        {
-            return NotFound();
-        }
+
+        return NotFound();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var pizza = _service.GetById(id);
+        var pizza = await _service.GetById(id);
 
         if(pizza is not null)
         {
-            _service.DeleteById(id);
+            await _service.DeleteById(id);
             return Ok();
         }
-        else
-        {
-            return NotFound();
-        }
+
+        return NotFound();
     }
 }
